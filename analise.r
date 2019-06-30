@@ -22,7 +22,7 @@ loan      <- read.csv("~/R-Projetos/Czech/dados/loan.asc", sep=";")
 order     <- read.csv("~/R-Projetos/Czech/dados/order.asc", sep=";")
 trans     <- read.csv("~/R-Projetos/Czech/dados/trans.asc", sep=";")
 
-glimpse(loan)
+glimpse(order)
 
 ###################################### TIDYING ############################################
 
@@ -64,3 +64,12 @@ district <- rename(district, n_cities = A9)
 district <- rename(district, ratio_urban_inhabitants = A10)
 district <- rename(district, average_salary = A11)
 district <- rename(district, n_enterpreneurs_per_1000_inhabitants = A14)
+
+###################################### JOINING ############################################
+
+#Join de Disposition com Client
+disp_aux <- filter(disp, type == "OWNER")
+cli_dis <-  inner_join(client, disp_aux, by=c("client_id" = "client_id"))
+
+#Join de cli_dis com Account
+cli_dis_acc <- inner_join(cli_dis, account, by=c("account_id" = "account_id"))
