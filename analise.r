@@ -9,8 +9,8 @@
 
 #Carregando Bibliotecas
 library(dplyr)
-library(stringr) 
 library(lubridate)
+library(ggplot2)
 
 #Carregando Bases
 account   <- read.csv("~/R-Projetos/Czech/dados/account.asc", sep=";")
@@ -73,3 +73,20 @@ cli_dis <-  inner_join(client, disp_aux, by=c("client_id" = "client_id"))
 
 #Join de cli_dis com Account
 cli_dis_acc <- inner_join(cli_dis, account, by=c("account_id" = "account_id"))
+
+#Join de cli_dis_acc com Loan
+cli_loa <- inner_join(loan, cli_dis_acc, by=c("account_id" = "account_id"))
+
+###################################### GRÁFICOS ############################################
+
+#Loan por sexo
+table(cli_loa$sex)
+
+ggplot(cli_loa, aes(x=sex, y=amount)) + 
+    geom_boxplot(alpha=0.3)
+
+#Loan por status
+table(cli_loa$status)
+
+ggplot(cli_loa, aes(x=status, y=amount)) + 
+    geom_boxplot(alpha=0.3)
