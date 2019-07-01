@@ -79,14 +79,56 @@ cli_loa <- inner_join(loan, cli_dis_acc, by=c("account_id" = "account_id"))
 
 ###################################### GRÁFICOS ############################################
 
+#LOAN
+  #Loan por status
+  table(loan$status)
+  
+  ggplot(loan, aes(x=status)) + 
+      geom_bar()
+  
+#DISPOSITION
+  #Disposition por type
+  table(disp$type)
+  
+  ggplot(disp, aes(x=type)) + 
+      geom_bar()
+  
+#ORDER
+  #Order por K_symbol
+  table(order$k_symbol)
+  
+  ggplot(order, aes(x=k_symbol)) + 
+      geom_bar()
+  
+  #Order por bank_to
+  ggplot(order, aes(x=bank_to)) + 
+      geom_bar()
+
+#TRANSACTION
+  #Transaction por type
+  ggplot(trans, aes(x=type)) + 
+      geom_bar()
+  
+  #Transaction por operation
+  ggplot(trans, aes(x=operation)) + 
+      geom_bar()
+  
+  #Transaction por k_symbol
+  ggplot(trans, aes(x=k_symbol)) + 
+      geom_bar()
+  
+#CARD
+  #Card por type
+  ggplot(card, aes(x=type)) + 
+      geom_bar()
+  
+#DISTRICT
+  #District por region
+  ggplot(district, aes(x=district_region)) + 
+      geom_bar()
+  
 #Loan por sexo
 table(cli_loa$sex)
 
 ggplot(cli_loa, aes(x=sex, y=amount)) + 
-    geom_boxplot(alpha=0.3)
-
-#Loan por status
-table(cli_loa$status)
-
-ggplot(cli_loa, aes(x=status, y=amount)) + 
     geom_boxplot(alpha=0.3)
