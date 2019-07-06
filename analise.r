@@ -11,6 +11,7 @@
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+library(plotly)
 
 #Carregando Bases
 account   <- read.csv("~/R-Projetos/Czech/dados/account.asc", sep=";")
@@ -29,6 +30,7 @@ glimpse(order)
 #Account
 levels(account$frequency) <- c("monthly","after transaction","weekly")
 account$date <- as.Date(as.character(account$date), "%y%m%d")
+account <- rename(account, start_date = date)
 
 #Card
 card$issued <- as.Date(as.character(card$issued), "%y%m%d")
@@ -45,15 +47,16 @@ client$birth_date <- ymd(paste0("19",client$yy, client$mm, client$dd))
 
 #Loan
 loan$date <- as.Date(as.character(loan$date), "%y%m%d")
+levels(loan$status)
 
 #Order
-levels(order$k_symbol) <- c(" ", "leasing", "insurrance", "household", "loan")
+levels(order$k_symbol) <- c("Desconhecido", "leasing", "insurrance", "household", "loan")
 
 #Transaction
 trans$date <- as.Date(as.character(trans$date), "%y%m%d")
 levels(trans$type) <- c("credit","withdrawal in cash","withdrawal")
-levels(trans$operation) <- c("","remittance bank","collection bank", "credit cash", "cash withdraw", "credit card withdraw")
-levels(trans$k_symbol) <- c("", " ", "old-age pension", "insurance", "negative balance", "household", "statement payment", "interest", "loan payment")
+levels(trans$operation) <- c("Desconhecido","remittance bank","collection bank", "credit cash", "cash withdraw", "credit card withdraw")
+levels(trans$k_symbol) <- c("Desconhecido", "Desconhecido", "old-age pension", "insurance", "negative balance", "household", "statement payment", "interest", "loan payment")
 
 #District
 district <- rename(district, district_id = A1)
@@ -77,58 +80,86 @@ cli_dis_acc <- inner_join(cli_dis, account, by=c("account_id" = "account_id"))
 #Join de cli_dis_acc com Loan
 cli_loa <- inner_join(loan, cli_dis_acc, by=c("account_id" = "account_id"))
 
+#Join de cli_dis_acc com Order
+cli_ord <- inner_join(order, cli_dis_acc, by=c("account_id" = "account_id"))
+
 ###################################### GRÁFICOS ############################################
 
 #LOAN
-  #Loan por status
-  table(loan$status)
-  
-  ggplot(loan, aes(x=status)) + 
-      geom_bar()
-  
+#Loan por status
+table(loan$status)
+
+ggplot(loan, aes(x=status)) + 
+  geom_bar()
+
 #DISPOSITION
-  #Disposition por type
-  table(disp$type)
-  
-  ggplot(disp, aes(x=type)) + 
-      geom_bar()
-  
+#Disposition por type
+table(disp$type)
+
+ggplot(disp, aes(x=type)) + 
+  geom_bar()
+
 #ORDER
-  #Order por K_symbol
-  table(order$k_symbol)
-  
-  ggplot(order, aes(x=k_symbol)) + 
-      geom_bar()
-  
-  #Order por bank_to
-  ggplot(order, aes(x=bank_to)) + 
-      geom_bar()
+#Order por K_symbol
+table(order$k_symbol)
+
+ggplot(order, aes(x=k_symbol)) + 
+  geom_bar()
+
+#Order por bank_to
+ggplot(order, aes(x=bank_to)) + 
+  geom_bar()
 
 #TRANSACTION
-  #Transaction por type
-  ggplot(trans, aes(x=type)) + 
-      geom_bar()
-  
-  #Transaction por operation
-  ggplot(trans, aes(x=operation)) + 
-      geom_bar()
-  
-  #Transaction por k_symbol
-  ggplot(trans, aes(x=k_symbol)) + 
-      geom_bar()
-  
+#Transaction por type
+ggplot(trans, aes(x=type)) + 
+  geom_bar()
+
+#Transaction por operation
+ggplot(trans, aes(x=operation)) + 
+  geom_bar()
+
+#Transaction por k_symbol
+ggplot(trans, aes(x=k_symbol)) + 
+  geom_bar()
+
 #CARD
-  #Card por type
-  ggplot(card, aes(x=type)) + 
-      geom_bar()
-  
+#Card por type
+ggplot(card, aes(x=type)) + 
+  geom_bar()
+
 #DISTRICT
-  #District por region
-  ggplot(district, aes(x=district_region)) + 
-      geom_bar()
-  
+#District por region
+ggplot(district, aes(x=district_region)) + 
+  geom_bar()
+
 #Loan por sexo
 table(cli_loa$sex)
 
 ggplot(cli_loa, aes(x=sex, y=amount)) + 
-    geom_boxplot(alpha=0.3)
+  geom_boxplot(alpha=0.3)
+
+#Criação de accounts por ano
+table(year(account$start_date))
+p <- plot_ly(account, x = ~unique(year(start_date)), y = ~table(year(account$start_date)), type = 'scatter', mode = 'lines')
+
+#Loan por ano
+summary(loan)
+table(year(loan$date))
+p <- plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 'scatter', mode = 'lines')
+
+#Transactions por ano
+summary(trans)
+table(year(trans$date))
+p <- plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type = 'scatter', mode = 'lines')
+
+#Cards por ano
+summary(card)
+table(year(card$issued))
+p <- plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), type = 'scatter', mode = 'lines')
+
+#Order por sexo
+summary(card)
+table(cli_ord$sex)
+p <- plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
