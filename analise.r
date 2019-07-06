@@ -83,6 +83,9 @@ cli_loa <- inner_join(loan, cli_dis_acc, by=c("account_id" = "account_id"))
 #Join de cli_dis_acc com Order
 cli_ord <- inner_join(order, cli_dis_acc, by=c("account_id" = "account_id"))
 
+#Join de cli_dis_acc com Trans
+cli_trans <- inner_join(trans, cli_dis_acc, by=c("account_id" = "account_id"))
+
 ###################################### GRÁFICOS ############################################
 
 #LOAN
@@ -134,32 +137,33 @@ ggplot(district, aes(x=district_region)) +
   geom_bar()
 
 #Loan por sexo
-table(cli_loa$sex)
-
 ggplot(cli_loa, aes(x=sex, y=amount)) + 
   geom_boxplot(alpha=0.3)
 
 #Criação de accounts por ano
-table(year(account$start_date))
 p <- plot_ly(account, x = ~unique(year(start_date)), y = ~table(year(account$start_date)), type = 'scatter', mode = 'lines')
 
 #Loan por ano
-summary(loan)
-table(year(loan$date))
 p <- plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 'scatter', mode = 'lines')
 
 #Transactions por ano
-summary(trans)
-table(year(trans$date))
 p <- plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type = 'scatter', mode = 'lines')
 
 #Cards por ano
-summary(card)
-table(year(card$issued))
 p <- plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), type = 'scatter', mode = 'lines')
 
-#Order por sexo
-summary(card)
-table(cli_ord$sex)
+#Order por sexo e k_symbol
 p <- plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+#Transaction por sexo e k_symbol
+p <- plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+#Transaction por sexo e operation
+p <- plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+#Transaction por sexo e type
+p <- plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
