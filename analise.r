@@ -194,3 +194,26 @@ p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_name, type = 'scatter', mode 
   layout(title = 'Gender Gap in Earnings per University',
          xaxis = list(showgrid = FALSE),
          yaxis = list(showgrid = FALSE))
+
+#Análise de inadimplentes
+#Contratos por status e por ano
+aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
+
+p <- plot_ly(aux, x = ~`year(date)`, y = ~d, type = 'bar', name = 'D') %>%
+  add_trace(y = ~c, name = 'C') %>%
+  add_trace(y = ~b, name = 'B') %>%
+  add_trace(y = ~a, name = 'A') %>%
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+
+#Contratos inadimplentes (B e D) e por ano
+aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
+
+p <- plot_ly(aux, x = ~`year(date)`, y = ~b, name = 'B', type = 'scatter', mode = 'lines+markers') %>%
+  add_trace(y = ~d, name = 'D', mode = 'lines+markers')
+
+#Inadimplentes por sexo por ano
+aux <- cli_loa %>% group_by(year(date)) %>% summarise(M = length(sex[sex == "M"]), F = length(sex[sex == "F"]))
+
+p <- plot_ly(aux, x = ~`year(date)`, y = ~M, type = 'bar', name = 'M') %>%
+  add_trace(y = ~F, name = 'F') %>%
+  layout(yaxis = list(title = 'Count'), barmode = 'group')
