@@ -86,6 +86,12 @@ cli_ord <- inner_join(order, cli_dis_acc, by=c("account_id" = "account_id"))
 #Join de cli_dis_acc com Trans
 cli_trans <- inner_join(trans, cli_dis_acc, by=c("account_id" = "account_id"))
 
+#Join de cli_dis_acc com Card
+cli_card <- inner_join(card, cli_dis_acc, by=c("disp_id" = "disp_id"))
+
+#Join de cli_dis_acc com district
+cli_dist <- left_join(cli_dis_acc, district, by=c("district_id.x" = "district_id"))
+
 ###################################### GRÁFICOS ############################################
 
 #LOAN
@@ -140,17 +146,22 @@ ggplot(district, aes(x=district_region)) +
 ggplot(cli_loa, aes(x=sex, y=amount)) + 
   geom_boxplot(alpha=0.3)
 
-#Criação de accounts por ano
-p <- plot_ly(account, x = ~unique(year(start_date)), y = ~table(year(account$start_date)), type = 'scatter', mode = 'lines')
-
 #Loan por ano
 p <- plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 'scatter', mode = 'lines')
+
+
+#Criação de accounts por ano
+p <- plot_ly(account, x = ~unique(year(start_date)), y = ~table(year(account$start_date)), type = 'scatter', mode = 'lines')
 
 #Transactions por ano
 p <- plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type = 'scatter', mode = 'lines')
 
 #Cards por ano
 p <- plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), type = 'scatter', mode = 'lines')
+
+#Cards por sexo e type
+p <- plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
 
 #Order por sexo e k_symbol
 p <- plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
@@ -167,3 +178,19 @@ p <- plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, type = "box")
 #Transaction por sexo e type
 p <- plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
+
+#Clientes por sexo e região
+aux <- cli_dist %>% group_by(district_region) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
+p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_region, type = 'scatter', mode = 'markers',
+             marker = list(size = ~abs(m-f), opacity = 0.5)) %>%
+  layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+#Clientes por sexo e cidade
+aux <- cli_dist %>% group_by(district_name) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
+p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_name, type = 'scatter', mode = 'markers',
+             marker = list(size = ~abs(m-f), opacity = 0.5)) %>%
+  layout(title = 'Gender Gap in Earnings per University',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
