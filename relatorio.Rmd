@@ -313,7 +313,7 @@ Lorem Ipsum...
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
-plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, colors = c("#ff96e4", "#56B1F7"), type = "box") %>%
   layout(boxmode = "group")
 
 ```
@@ -326,7 +326,7 @@ Lorem Ipsum...
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
-plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, colors = c("#ff96e4", "#56B1F7"), type = "box") %>%
   layout(boxmode = "group")
 
 ```
@@ -335,7 +335,7 @@ plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
-plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, type = "box") %>%
+plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, colors = c("#ff96e4", "#56B1F7"), type = "box") %>%
   layout(boxmode = "group")
 
 ```
@@ -344,7 +344,7 @@ plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, type = "box") %>%
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
-plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, type = "box") %>%
+plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, colors = c("#ff96e4", "#56B1F7"), type = "box") %>%
   layout(boxmode = "group")
 
 ```
@@ -358,7 +358,7 @@ Lorem Ipsum...
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
-plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, type = "box") %>%
+plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, colors = c("#ff96e4", "#56B1F7"), type = "box") %>%
   layout(boxmode = "group")
 
 ```
