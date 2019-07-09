@@ -230,16 +230,137 @@ plot_ly(x = ~anos, y = ~contas, type = 'scatter', mode = 'lines')
 
 Lorem Ipsum...
 
-##### 3.3 Análise de Pagamentos
+1. Empréstimos por sexo
+
+```{r fig.width=4, fig.height=2}
+
+ggplot(cli_loa, aes(x=sex, y=amount)) + 
+  geom_boxplot(alpha=0.3)
+
+```
+
+2. Contratos por status e por ano
+
+```{r fig.width=4, fig.height=2}
+aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
+
+plot_ly(aux, x = ~`year(date)`, y = ~d, type = 'bar', name = 'D') %>%
+  add_trace(y = ~c, name = 'C') %>%
+  add_trace(y = ~b, name = 'B') %>%
+  add_trace(y = ~a, name = 'A') %>%
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+
+```
+
+3. Contratos inadimplentes (B e D) por ano
+
+```{r fig.width=4, fig.height=2}
+aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
+
+plot_ly(aux, x = ~`year(date)`, y = ~b, name = 'B', type = 'scatter', mode = 'lines+markers') %>%
+  add_trace(y = ~d, name = 'D', mode = 'lines+markers')
+
+```
+
+4. Inadimplentes por sexo por ano
+
+```{r fig.width=4, fig.height=2}
+
+aux <- cli_loa %>% group_by(year(date)) %>% summarise(M = length(sex[sex == "M"]), F = length(sex[sex == "F"]))
+
+plot_ly(aux, x = ~`year(date)`, y = ~M, type = 'bar', name = 'M') %>%
+  add_trace(y = ~F, name = 'F') %>%
+  layout(yaxis = list(title = 'Count'), barmode = 'group')
+  
+```
+  
+##### 3.3 Análise de Clientes
+
+Lorem Ipsum... 
+
+1. Clientes por sexo e região
+
+```{r fig.width=4, fig.height=2}
+aux <- cli_dist %>% group_by(district_region) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
+
+plot_ly(aux, x = ~m, y = ~f, text = ~district_region, type = 'scatter', mode = 'markers',
+             marker = list(size = ~abs(m-f), opacity = 0.5)) %>%
+  layout(title = 'Clientes por sexo e região',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+```
+
+2. Clientes por sexo e cidade
+
+```{r fig.width=4, fig.height=2}
+
+aux <- cli_dist %>% group_by(district_name) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
+
+plot_ly(aux, x = ~m, y = ~f, text = ~district_name, type = 'scatter', mode = 'markers',
+             marker = list(size = ~abs(m-f), opacity = 0.5)) %>%
+  layout(title = 'Clientes por sexo e cidade',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE))
+
+```
+
+##### 3.4 Análise de Pagamentos
 
 Lorem Ipsum...
 
-##### 3.4 Análise de Transações
+1. Order por sexo e k_symbol
+
+```{r fig.width=8, fig.height=4, warning = FALSE}
+
+plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+```
+
+##### 3.5 Análise de Transações
 
 Lorem Ipsum...
 
-##### 3.5 Análise de Cartões
+1. Transaction por sexo e k_symbol
+
+```{r fig.width=8, fig.height=4, warning = FALSE}
+
+plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+```
+
+2. Transaction por sexo e operation
+
+```{r fig.width=8, fig.height=4, warning = FALSE}
+
+plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+```
+
+3. Transaction por sexo e type
+
+```{r fig.width=8, fig.height=4, warning = FALSE}
+
+plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+```
+
+
+##### 3.6 Análise de Cartões
 
 Lorem Ipsum...
+
+1. Cards por sexo e type
+
+```{r fig.width=8, fig.height=4, warning = FALSE}
+
+plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, type = "box") %>%
+  layout(boxmode = "group")
+
+```
 
 #### **4. Referências**
