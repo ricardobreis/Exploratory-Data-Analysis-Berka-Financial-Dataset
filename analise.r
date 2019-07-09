@@ -92,7 +92,7 @@ cli_card <- inner_join(card, cli_dis_acc, by=c("disp_id" = "disp_id"))
 #Join de cli_dis_acc com district
 cli_dist <- left_join(cli_dis_acc, district, by=c("district_id.x" = "district_id"))
 
-###################################### GRÁFICOS ############################################
+################################ GRÁFICOS - Sem Relacionamentos ###############################
 
 #LOAN
 #Loan por status
@@ -100,6 +100,9 @@ table(loan$status)
 
 ggplot(loan, aes(x=status)) + 
   geom_bar()
+
+#Loan por ano
+p <- plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 'scatter', mode = 'lines')
 
 #DISPOSITION
 #Disposition por type
@@ -132,32 +135,34 @@ ggplot(trans, aes(x=operation)) +
 ggplot(trans, aes(x=k_symbol)) + 
   geom_bar()
 
+#Transactions por ano
+p <- plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type = 'scatter', mode = 'lines')
+
 #CARD
 #Card por type
 ggplot(card, aes(x=type)) + 
   geom_bar()
+
+#Cards por ano
+p <- plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), type = 'scatter', mode = 'lines')
 
 #DISTRICT
 #District por region
 ggplot(district, aes(x=district_region)) + 
   geom_bar()
 
+#ACCOUNT
+#Criação de accounts por ano
+anos <- unique(year(account$start_date))
+contas <- table(year(account$start_date))
+p <- plot_ly(x = ~anos, y = ~contas, type = 'scatter', mode = 'lines')
+
+
+################################ Gráficos - Com Relacionamentos ################################
+
 #Loan por sexo
 ggplot(cli_loa, aes(x=sex, y=amount)) + 
   geom_boxplot(alpha=0.3)
-
-#Loan por ano
-p <- plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 'scatter', mode = 'lines')
-
-
-#Criação de accounts por ano
-p <- plot_ly(account, x = ~unique(year(start_date)), y = ~table(year(account$start_date)), type = 'scatter', mode = 'lines')
-
-#Transactions por ano
-p <- plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type = 'scatter', mode = 'lines')
-
-#Cards por ano
-p <- plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), type = 'scatter', mode = 'lines')
 
 #Cards por sexo e type
 p <- plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, type = "box") %>%
@@ -195,7 +200,8 @@ p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_name, type = 'scatter', mode 
          xaxis = list(showgrid = FALSE),
          yaxis = list(showgrid = FALSE))
 
-#Análise de inadimplentes
+################################## Análise de inadimplentes ###################################
+
 #Contratos por status e por ano
 aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
 
