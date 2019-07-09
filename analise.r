@@ -168,27 +168,37 @@ ggplot(cli_loa, aes(x=sex, y=amount)) +
 p <- plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
 
+suppressWarnings(print(p))
+
 #Order por sexo e k_symbol
 p <- plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
+
+suppressWarnings(print(p))
 
 #Transaction por sexo e k_symbol
 p <- plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
 
+suppressWarnings(print(p))
+
 #Transaction por sexo e operation
 p <- plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
+
+suppressWarnings(print(p))
 
 #Transaction por sexo e type
 p <- plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, type = "box") %>%
   layout(boxmode = "group")
 
+suppressWarnings(print(p))
+
 #Clientes por sexo e região
 aux <- cli_dist %>% group_by(district_region) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
 p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_region, type = 'scatter', mode = 'markers',
              marker = list(size = ~abs(m-f), opacity = 0.5)) %>%
-  layout(title = 'Gender Gap in Earnings per University',
+  layout(title = 'Clientes por sexo e região',
          xaxis = list(showgrid = FALSE),
          yaxis = list(showgrid = FALSE))
 
@@ -196,7 +206,7 @@ p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_region, type = 'scatter', mod
 aux <- cli_dist %>% group_by(district_name) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
 p <- plot_ly(aux, x = ~m, y = ~f, text = ~district_name, type = 'scatter', mode = 'markers',
              marker = list(size = ~abs(m-f), opacity = 0.5)) %>%
-  layout(title = 'Gender Gap in Earnings per University',
+  layout(title = 'Clientes por sexo e cidade',
          xaxis = list(showgrid = FALSE),
          yaxis = list(showgrid = FALSE))
 
