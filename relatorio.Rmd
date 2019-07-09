@@ -1,0 +1,245 @@
+---
+title: <center> Análise Exploratória de Dados - Berka Financial Dataset </center>
+author: <center> *Ricardo Reis, Marcio Eggers e Flavio Freire*  </center>
+date: <center> *9 de julho de 2019* </center>
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### **1. Introdução**
+
+Lorem Ipsum...
+
+##### 1.1 Roteiro
+
+Lorem Ipsum...
+
+#### **2. Limpeza e Organização dos Dados**
+
+Lorem Ipsum...
+
+```{r include=FALSE}
+
+#Carregando Bibliotecas
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(plotly)
+
+#Carregando Bases
+account   <- read.csv("~/R-Projetos/Czech/dados/account.asc", sep=";")
+card      <- read.csv("~/R-Projetos/Czech/dados/card.asc", sep=";")
+client    <- read.csv("~/R-Projetos/Czech/dados/client.asc", sep=";")
+disp      <- read.csv("~/R-Projetos/Czech/dados/disp.asc", sep=";")
+district  <- read.csv("~/R-Projetos/Czech/dados/district.asc", sep=";")
+loan      <- read.csv("~/R-Projetos/Czech/dados/loan.asc", sep=";")
+order     <- read.csv("~/R-Projetos/Czech/dados/order.asc", sep=";")
+trans     <- read.csv("~/R-Projetos/Czech/dados/trans.asc", sep=";")
+
+###################################### TIDYING ############################################
+
+#Account
+levels(account$frequency) <- c("monthly","after transaction","weekly")
+account$date <- as.Date(as.character(account$date), "%y%m%d")
+account <- rename(account, start_date = date)
+
+#Card
+card$issued <- as.Date(as.character(card$issued), "%y%m%d")
+
+#Client
+client$sex <- ifelse(substr(client$birth_number,3,4) >= 50, "F","M" )
+client$yy <- substr(client$birth_number,1,2)
+client$mm <- ifelse(substr(client$birth_number,3,4) >= 50, 
+                    as.integer(substr(client$birth_number,3,4)) - 50,
+                    substr(client$birth_number,3,4))
+client$mm <- ifelse(nchar(client$mm) < 2, paste0("0",client$mm),client$mm)
+client$dd <- substr(client$birth_number,5,6)
+client$birth_date <- ymd(paste0("19",client$yy, client$mm, client$dd))
+
+#Loan
+loan$date <- as.Date(as.character(loan$date), "%y%m%d")
+levels(loan$status)
+
+#Order
+levels(order$k_symbol) <- c("Desconhecido", "leasing", "insurrance", "household", "loan")
+
+#Transaction
+trans$date <- as.Date(as.character(trans$date), "%y%m%d")
+levels(trans$type) <- c("credit","withdrawal in cash","withdrawal")
+levels(trans$operation) <- c("Desconhecido","remittance bank","collection bank", "credit cash", "cash withdraw", "credit card withdraw")
+levels(trans$k_symbol) <- c("Desconhecido", "Desconhecido", "old-age pension", "insurance", "negative balance", "household", "statement payment", "interest", "loan payment")
+
+#District
+district <- rename(district, district_id = A1)
+district <- rename(district, district_name = A2)
+district <- rename(district, district_region = A3)
+district <- rename(district, district_inhabitants = A4)
+district <- rename(district, n_cities = A9)
+district <- rename(district, ratio_urban_inhabitants = A10)
+district <- rename(district, average_salary = A11)
+district <- rename(district, n_enterpreneurs_per_1000_inhabitants = A14)
+
+###################################### JOINING ############################################
+
+#Join de Disposition com Client
+disp_aux <- filter(disp, type == "OWNER")
+cli_dis <-  inner_join(client, disp_aux, by=c("client_id" = "client_id"))
+
+#Join de cli_dis com Account
+cli_dis_acc <- inner_join(cli_dis, account, by=c("account_id" = "account_id"))
+
+#Join de cli_dis_acc com Loan
+cli_loa <- inner_join(loan, cli_dis_acc, by=c("account_id" = "account_id"))
+
+#Join de cli_dis_acc com Order
+cli_ord <- inner_join(order, cli_dis_acc, by=c("account_id" = "account_id"))
+
+#Join de cli_dis_acc com Trans
+cli_trans <- inner_join(trans, cli_dis_acc, by=c("account_id" = "account_id"))
+
+#Join de cli_dis_acc com Card
+cli_card <- inner_join(card, cli_dis_acc, by=c("disp_id" = "disp_id"))
+
+#Join de cli_dis_acc com district
+cli_dist <- left_join(cli_dis_acc, district, by=c("district_id.x" = "district_id"))
+
+```
+
+#### **3. Análise Exporatória de Dados**
+
+##### 3.1 Tabelas
+
+Lorem Ipsum...
+
+1. LOAN
+* Loan por status
+  
+```{r fig.width=4, fig.height=2}
+
+ggplot(loan, aes(x=status)) + geom_bar()
+
+```
+
+* Loan por ano
+```{r fig.width=4, fig.height=2}
+
+plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 'scatter', mode = 'lines')
+
+```
+
+2. DISPOSITION
+* Disposition por type
+  
+```{r fig.width=4, fig.height=2}
+
+ggplot(disp, aes(x=type)) + geom_bar()
+
+```
+
+3. ORDER
+* Order por K_symbol
+  
+```{r fig.width=4, fig.height=2}
+
+ggplot(order, aes(x=k_symbol)) + geom_bar()
+
+```
+    
+* Order por bank_to
+
+```{r fig.width=4, fig.height=2}
+
+ggplot(order, aes(x=bank_to)) + geom_bar()
+
+```    
+    
+4. TRANSACTION
+* Transaction por type
+
+```{r fig.width=4, fig.height=2}
+
+ggplot(trans, aes(x=type)) + geom_bar()
+
+```
+
+* Transaction por operation
+
+```{r fig.width=8, fig.height=2}
+
+ggplot(trans, aes(x=operation)) + geom_bar()
+
+```
+
+* Transaction por k_symbol
+
+```{r fig.width=8, fig.height=2}
+
+ggplot(trans, aes(x=k_symbol)) + geom_bar()
+
+```
+
+* Transactions por ano
+
+```{r fig.width=4, fig.height=2}
+
+plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type = 'scatter', mode = 'lines')
+
+```
+
+5. CARD
+* Card por type
+
+```{r fig.width=4, fig.height=2}
+
+ggplot(card, aes(x=type)) + geom_bar()
+
+```
+
+* Cards por ano
+
+```{r fig.width=4, fig.height=2}
+
+plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), type = 'scatter', mode = 'lines')
+
+```
+
+6. DISTRICT
+* District por region
+
+```{r fig.width=8, fig.height=2}
+
+ggplot(district, aes(x=district_region)) + geom_bar()
+
+```
+
+7. ACCOUNT
+* Criação de accounts por ano
+
+```{r fig.width=4, fig.height=2}
+
+anos <- unique(year(account$start_date))
+contas <- table(year(account$start_date))
+plot_ly(x = ~anos, y = ~contas, type = 'scatter', mode = 'lines')
+
+```
+
+##### 3.2 Análise de Empréstimos
+
+Lorem Ipsum...
+
+##### 3.3 Análise de Pagamentos
+
+Lorem Ipsum...
+
+##### 3.4 Análise de Transações
+
+Lorem Ipsum...
+
+##### 3.5 Análise de Cartões
+
+Lorem Ipsum...
+
+#### **4. Referências**
