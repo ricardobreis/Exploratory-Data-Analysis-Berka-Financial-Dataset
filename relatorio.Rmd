@@ -1,78 +1,188 @@
 ---
-title: <center> Análise Exploratória de Dados - Berka Financial Dataset </center>
-author: <center> *Ricardo Reis, Marcio Eggers e Flavio Freire*  </center>
-date: <center> *9 de julho de 2019* </center>
+title: "<center> Análise Exploratória de Dados </center>"
+subtitle: "<center> Berka Financial Dataset - CZECH </center>"
+author: "<center> *Ricardo Reis, Marcio Eggers e Flavio Freire*  </center>"
+date: "<center> *9 de julho de 2019* </center>"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
+<center> *Professor: Gustavo Mirapalheta* </center>
+<center> *MBA FGV - Turma Berrini* </center>
+
+
+&nbsp;
+
+
+&nbsp;
+
+#### **Sumário**
+
+##### 1. Introdução
+
+###### &nbsp;&nbsp;&nbsp;1.1 Roteiro
+  
+##### 2. Limpeza e Organização dos Dados
+
+###### &nbsp;&nbsp;&nbsp;2.1 Carregando Bibliotecas
+
+###### &nbsp;&nbsp;&nbsp;2.2 Carregando Banco de Dados
+
+###### &nbsp;&nbsp;&nbsp;2.3 Formatando Banco de Dados
+
+###### &nbsp;&nbsp;&nbsp;2.4 Juntando Banco de Dados
+
+##### 3. Estudo de Tabelas e Gráficos
+
+###### &nbsp;&nbsp;&nbsp;3.1 Tabela Loan
+
+###### &nbsp;&nbsp;&nbsp;3.2 Tabela Disposition
+
+###### &nbsp;&nbsp;&nbsp;3.3 Tabela Order
+
+###### &nbsp;&nbsp;&nbsp;3.4 Tabela Transaction
+
+###### &nbsp;&nbsp;&nbsp;3.5 Tabela Card
+
+###### &nbsp;&nbsp;&nbsp;3.6 Tabela District
+
+###### &nbsp;&nbsp;&nbsp;3.7 Tabela Account
+
+##### 4. Análise de Grupo de Dados consolidados e Gráficos
+
+###### &nbsp;&nbsp;&nbsp;4.1 Análise de Empréstimos
+
+###### &nbsp;&nbsp;&nbsp;4.2 Análise de Clientes
+
+###### &nbsp;&nbsp;&nbsp;4.3 Análise de Pagamentos
+
+###### &nbsp;&nbsp;&nbsp;4.4 Análise de Transações
+
+###### &nbsp;&nbsp;&nbsp;4.5 Análise de Cartões
+
+##### 5. Referências
+
+
+&nbsp;
 
 #### **1. Introdução**
 
-Lorem Ipsum...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O objetivo desse trabalho é estudar o banco de dados fornecido pelo banco Tcheco Berka para definir e mapear as características que ajudam a destinguir bons e maus pagadores. Com base nesse estudo o banco podera adotar ações a serem tomadas a partir desses perfis visando aumentar os empréstimos e produtos correlatos aos bons pagadores e procurando precificar corretamente ou evitar os maus pagadores.
 
-##### 1.1 Roteiro
 
-Lorem Ipsum...
+&nbsp;
+
+###### **&nbsp;&nbsp;&nbsp;1.1 Roteiro**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Primeiramente iremos importar a base de Dados fornecida pelo banco para o RStudio para que possamos limpar, organizar e estruturar a base de dados. Posteriormente faremos a análise dos perfis de clientes a fim de procurar identificar as características que estao relacionadas ao grau de inadimplência dos clientes.
+
+
+&nbsp;
 
 #### **2. Limpeza e Organização dos Dados**
 
-Lorem Ipsum...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Primeiramente iremos carregar as bibliotecas disponíveis no RStudio que irão nos auxiliar na limpeza e organização das tabelas, para depois carregar as tabelas e começar a limpeza e organização dos dados.
 
-```{r include=FALSE}
+```{r echo=T, results='hide'}
 
-#Carregando Bibliotecas
-library(dplyr)
-library(lubridate)
-library(ggplot2)
-library(plotly)
 
-#Carregando Bases
-account   <- read.csv("~/R-Projetos/Czech/dados/account.asc", sep=";")
-card      <- read.csv("~/R-Projetos/Czech/dados/card.asc", sep=";")
-client    <- read.csv("~/R-Projetos/Czech/dados/client.asc", sep=";")
-disp      <- read.csv("~/R-Projetos/Czech/dados/disp.asc", sep=";")
-district  <- read.csv("~/R-Projetos/Czech/dados/district.asc", sep=";")
-loan      <- read.csv("~/R-Projetos/Czech/dados/loan.asc", sep=";")
-order     <- read.csv("~/R-Projetos/Czech/dados/order.asc", sep=";")
-trans     <- read.csv("~/R-Projetos/Czech/dados/trans.asc", sep=";")
+```
 
+
+&nbsp;
+
+###### **&nbsp;&nbsp;&nbsp;2.1 Carregando Bibliotecas**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Para esse trabalho iremos fazer uso de quatro bibliotecas do RStudio, são elas, dplyr, lubridiate, ggplot2 e plotly.
+
+```{r echo=T, results='hide'}
+#Carregando Bibliotecas "dplyr", "lubridiate", "ggplot2" e "ploty"
+library(dplyr, warn.conflicts=F, quietly=T)
+library(lubridate, warn.conflicts=F, quietly=T)
+library(ggplot2, warn.conflicts=F, quietly=T)
+library(plotly, warn.conflicts=F, quietly=T)
+
+```
+
+
+&nbsp;
+
+###### **&nbsp;&nbsp;&nbsp;2.2 Carregando Banco de Dados**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Após fazer o download dos 8 bancos de dados com extensão asc fornecidos pelo banco faremos a importação dessas bases para o sistema.
+
+```{r echo=T, results='hide'}
+#Carregando Bases, importando os 8 banco de dados para o RStudio
+account   <- read.csv("account.asc", sep=";")
+card      <- read.csv("card.asc", sep=";")
+client    <- read.csv("client.asc", sep=";")
+disp      <- read.csv("disp.asc", sep=";")
+district  <- read.csv("district.asc", sep=";")
+loan      <- read.csv("loan.asc", sep=";")
+order     <- read.csv("order.asc", sep=";")
+trans     <- read.csv("trans.asc", sep=";")
+```
+
+
+&nbsp;
+
+###### **&nbsp;&nbsp;&nbsp;2.3 Formatando Banco de Dados**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No processo de formatação do banco de dados primeiramente lemos as bases e procuramos identificar melhorias e correções nas bases para poder fazer a análise dos dados. As formatoções efetuadas foram: mudar formatos das colunas, criar novas colunas para separar individuos femininos de masculinos, corrigir a data de nascimento que estava somado o numeros 50, renomear as colunas e traduzir do Tcheco para o Inglês.
+
+```{r echo=T, results='hide'}
 ###################################### TIDYING ############################################
 
 #Account
+#alteramos os nomes em Tcheco para Inglês para facilitar a visualisação e entendimento da base
 levels(account$frequency) <- c("monthly","after transaction","weekly")
+#mudando o formato da coluna date para ano/mês/dia
 account$date <- as.Date(as.character(account$date), "%y%m%d")
+#renomeando a coluna date para start_date
 account <- rename(account, start_date = date)
 
 #Card
+#mudando o formato da coluna issued para ano/mês/dia
 card$issued <- as.Date(as.character(card$issued), "%y%m%d")
 
 #Client
+#de acordo com a base fornecida, aos clientes femininos foi somado o número 50 no mês de nascimento
+#criando uma coluna para identificar os clientes do sexo feminino
 client$sex <- ifelse(substr(client$birth_number,3,4) >= 50, "F","M" )
+#separando o ano de nascimento dos clientes
 client$yy <- substr(client$birth_number,1,2)
+#separando o mês de nascimento dos clientes e subtraindo o numero 50 dos individuos femininos
 client$mm <- ifelse(substr(client$birth_number,3,4) >= 50, 
                     as.integer(substr(client$birth_number,3,4)) - 50,
                     substr(client$birth_number,3,4))
+#mudando o formato do mês dos clientes para que tenham duas casas
 client$mm <- ifelse(nchar(client$mm) < 2, paste0("0",client$mm),client$mm)
+#separando o dia de nascimento dos clientes
 client$dd <- substr(client$birth_number,5,6)
+#concatenando novamente o ano/mês/dia sem a soma do numero 50 nos indivíduos femininos e criando uma nova coluna com o nome birth_date
 client$birth_date <- ymd(paste0("19",client$yy, client$mm, client$dd))
 
 #Loan
+#mudando o formato da coluna date para ano/mês/dia
 loan$date <- as.Date(as.character(loan$date), "%y%m%d")
 levels(loan$status)
 
 #Order
+#alteramos os nomes em Tcheco para Inglês para que facilitar a visualisação e entendimento da base tratando os registros em branco como Desconhecidos
 levels(order$k_symbol) <- c("Desconhecido", "leasing", "insurrance", "household", "loan")
 
 #Transaction
+#mudando o formato da date para ano/mês/dia
 trans$date <- as.Date(as.character(trans$date), "%y%m%d")
+#alteramos os nomes em Tcheco para Inglês para que facilitar a visualisação e entendimento da base
 levels(trans$type) <- c("credit","withdrawal in cash","withdrawal")
+#alteramos os nomes em Tcheco para Inglês para que facilitar a visualisação e entendimento da base
 levels(trans$operation) <- c("Desconhecido","remittance bank","collection bank", "credit cash", "cash withdraw", "credit card withdraw")
+#alteramos os nomes em Tcheco para Inglês para que facilitar a visualisação e entendimento da base
 levels(trans$k_symbol) <- c("Desconhecido", "Desconhecido", "old-age pension", "insurance", "negative balance", "household", "statement payment", "interest", "loan payment")
 
 #District
+#o banco de Dados District renomeamos o nome das colunas que estavam como A1 a A14
 district <- rename(district, district_id = A1)
 district <- rename(district, district_name = A2)
 district <- rename(district, district_region = A3)
@@ -81,40 +191,66 @@ district <- rename(district, n_cities = A9)
 district <- rename(district, ratio_urban_inhabitants = A10)
 district <- rename(district, average_salary = A11)
 district <- rename(district, n_enterpreneurs_per_1000_inhabitants = A14)
+```
+
+
+&nbsp;
+
+###### **&nbsp;&nbsp;&nbsp;2.4 Juntando Banco de Dados**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nessa etapa procuramos fazer a junção de algumas bases de dados que achamos pertinentes para fazer a análise das variáveis que se encontravam em bases distintas.
+
+```{r echo=TRUE}
+
 
 ###################################### JOINING ############################################
 
 #Join de Disposition com Client
+#primeiramente criamos uma base auxiliar para filtrar somente os tipos "OWNER" para evitar contas duplicadas
 disp_aux <- filter(disp, type == "OWNER")
+#utilizamos o comando inner_join para consolidar os dois bancos de dados e chamamos de cli_dis
 cli_dis <-  inner_join(client, disp_aux, by=c("client_id" = "client_id"))
 
 #Join de cli_dis com Account
+#utilizamos novamente o inner_join para acrescentar a base Account a nossa nova base cli_dis e chamamos de cli_dis_acc
 cli_dis_acc <- inner_join(cli_dis, account, by=c("account_id" = "account_id"))
 
 #Join de cli_dis_acc com Loan
+#com inner_join acresentamos a base loan a nossa base cli_dis_acc e formamos a base cli_loa
 cli_loa <- inner_join(loan, cli_dis_acc, by=c("account_id" = "account_id"))
 
 #Join de cli_dis_acc com Order
+#com inner_join acresentamos a base order a nossa base cli_dis_acc e formamos a base cli_ord
 cli_ord <- inner_join(order, cli_dis_acc, by=c("account_id" = "account_id"))
 
 #Join de cli_dis_acc com Trans
+#com inner_join acresentamos a base transaction a nossa base cli_dis_acc e formamos a base cli_trans
 cli_trans <- inner_join(trans, cli_dis_acc, by=c("account_id" = "account_id"))
 
 #Join de cli_dis_acc com Card
+#com inner_join acresentamos a base Card a nossa base cli_dis_acc e formamos a base cli_card
 cli_card <- inner_join(card, cli_dis_acc, by=c("disp_id" = "disp_id"))
 
 #Join de cli_dis_acc com district
+#com inner_join acresentamos a base District a nossa base cli_dis_acc e formamos a base cli_dist
 cli_dist <- left_join(cli_dis_acc, district, by=c("district_id.x" = "district_id"))
 
 ```
 
-#### **3. Análise Exporatória de Dados**
 
-##### 3.1 Tabelas
+&nbsp;
 
-Lorem Ipsum...
+#### **3. Estudo de Tabelas e Gráficos**
 
-1. LOAN
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Faremos um estudo primeiramente das tabela fornecidas diretamente pelo banco Berka e depois faremos a análise das tabelas consolidadas que criamos para cruzar as variáveis dos diferentes bancos de dados.
+
+
+&nbsp;
+
+##### **3.1 Tabela Loan**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela loan por status podemos observar que os maus pagadores "status B e D" são uma parcela pequena dos empréstimos totais feitos pelo banco. No segundo gráfico fizemos um estudo de número de empréstimos por ano para ter uma idéia do crescimento anual.
+
 * Loan por status
   
 ```{r fig.width=4, fig.height=2}
@@ -130,7 +266,13 @@ plot_ly(loan, x = ~unique(year(loan$date)), y = ~table(year(loan$date)), type = 
 
 ```
 
-2. DISPOSITION
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;3.2 Tabela Disposition**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela Disposition temos uma idéia da distribuição de usuários e proprietários dos cartões.
+
 * Disposition por type
   
 ```{r fig.width=4, fig.height=2}
@@ -139,7 +281,13 @@ ggplot(disp, aes(x=type)) + geom_bar()
 
 ```
 
-3. ORDER
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;3.3 Tabela Order**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela Order fizemos para ver a distribuição da característica da trasação k_symbol e podemos observar uma maior concentração de Household. No gráfico de bank_to podemos observar que os bancos tem uma distribuição parecida não concentrando em nenhum deles especificamente.
+
 * Order por K_symbol
   
 ```{r fig.width=4, fig.height=2}
@@ -155,8 +303,14 @@ ggplot(order, aes(x=k_symbol)) + geom_bar()
 ggplot(order, aes(x=bank_to)) + geom_bar()
 
 ```    
-    
-4. TRANSACTION
+
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;3.4 Tabela Transaction**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela Transaction compara o volume de transações primeiramente pelo tipo, no segundo gráfico por operação, no terceiro pela caracterização da operação e por fim no quarto gráfico temos uma evolução do número de transações por ano.
+
 * Transaction por type
 
 ```{r fig.width=4, fig.height=2}
@@ -189,7 +343,13 @@ plot_ly(trans, x = ~unique(year(trans$date)), y = ~table(year(trans$date)), type
 
 ```
 
-5. CARD
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;3.5 Tabela Card**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela Credit Card nos mostra no primeiro gráfico a concentração pelo tipo de cartão de crédito, onde podemos constatar que o clássico e o mais recorrente, e no segundo gráfico o número de cartões de créditos emitidos por ano e seu crescimento.
+
 * Card por type
 
 ```{r fig.width=4, fig.height=2}
@@ -206,7 +366,13 @@ plot_ly(card, x = ~unique(year(card$issued)), y = ~table(year(card$issued)), typ
 
 ```
 
-6. DISTRICT
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;3.6 Tabela District**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela District nos permite analisar a distribuição de cartões emitidos por distrito.
+
 * District por region
 
 ```{r fig.width=8, fig.height=2}
@@ -215,7 +381,13 @@ ggplot(district, aes(x=district_region)) + geom_bar()
 
 ```
 
-7. ACCOUNT
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;3.7 Tabela Account**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; O gráfico da tabela Account nos mostra quantas contas novas foram abertas por ano.
+
 * Criação de accounts por ano
 
 ```{r fig.width=4, fig.height=2}
@@ -226,11 +398,21 @@ plot_ly(x = ~anos, y = ~contas, type = 'scatter', mode = 'lines')
 
 ```
 
-##### 3.2 Análise de Empréstimos
 
-Lorem Ipsum...
+&nbsp;
 
-1. Empréstimos por sexo
+#### **4. Análise de Grupo de Dados consolidados e Gráficos**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesta estapa iremos fazer a análise das bases consolidadas para podermos analisar o comportamento de variáveis de diversar planilhas de forma conjunta.
+
+
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;4.1 Análise de Empréstimos**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No primeiro gráfico fazemos uma análise gráfica através do boxplot para ver se temos diferença entre as mulheres e homens.
+
+* Empréstimos por sexo
 
 ```{r fig.width=4, fig.height=2}
 
@@ -239,7 +421,9 @@ ggplot(cli_loa, aes(x=sex, y=amount)) +
 
 ```
 
-2. Contratos por status e por ano
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesse segundo gráfico, fizemos duas separações, a separação por ano de número de contratos e dentre esses contratos identificamos quais foram classificados como mau pagadores  (B e D) e quantos foram bons pagadores (A e B)
+
+* Contratos por status e por ano
 
 ```{r fig.width=4, fig.height=2}
 aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
@@ -251,8 +435,9 @@ plot_ly(aux, x = ~`year(date)`, y = ~d, type = 'bar', name = 'D') %>%
   layout(yaxis = list(title = 'Count'), barmode = 'stack')
 
 ```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesse terceiro gráfico fazemos uma análise somente do comportamento dos maus pagadores por ano e quantidade.
 
-3. Contratos inadimplentes (B e D) por ano
+* Contratos inadimplentes (B e D) por ano
 
 ```{r fig.width=4, fig.height=2}
 aux <- cli_loa %>% group_by(year(date)) %>% summarise(a = length(status[status == "A"]), b = length(status[status == "B"]), c = length(status[status == "C"]), d = length(status[status == "D"]))
@@ -261,8 +446,9 @@ plot_ly(aux, x = ~`year(date)`, y = ~b, name = 'B', type = 'scatter', mode = 'li
   add_trace(y = ~d, name = 'D', mode = 'lines+markers')
 
 ```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesse quarto gráfico fazemos uma análise de contratos por ano e a proporção desses contratos que foram para homens e mulheres.
 
-4. Inadimplentes por sexo por ano
+* Inadimplentes por sexo por ano
 
 ```{r fig.width=4, fig.height=2}
 
@@ -273,12 +459,15 @@ plot_ly(aux, x = ~`year(date)`, y = ~M, type = 'bar', name = 'M') %>%
   layout(yaxis = list(title = 'Count'), barmode = 'group')
   
 ```
-  
-##### 3.3 Análise de Clientes
 
-Lorem Ipsum... 
 
-1. Clientes por sexo e região
+&nbsp;
+
+##### **&nbsp;&nbsp;&nbsp;4.2 Análise de Clientes**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No primeiro gráfico fazemos uma análise de clientes por região e por sexo.
+
+* Clientes por sexo e região
 
 ```{r fig.width=4, fig.height=2}
 aux <- cli_dist %>% group_by(district_region) %>% summarise(f = length(sex[sex == "F"]), m = length(sex[sex == "M"]))
@@ -290,8 +479,9 @@ plot_ly(aux, x = ~m, y = ~f, text = ~district_region, type = 'scatter', mode = '
          yaxis = list(showgrid = FALSE))
 
 ```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No segundo gráfico é feito a mesma análise porém por cidade ao invés de região.
 
-2. Clientes por sexo e cidade
+* Clientes por sexo e cidade
 
 ```{r fig.width=4, fig.height=2}
 
@@ -305,11 +495,14 @@ plot_ly(aux, x = ~m, y = ~f, text = ~district_name, type = 'scatter', mode = 'ma
 
 ```
 
-##### 3.4 Análise de Pagamentos
 
-Lorem Ipsum...
+&nbsp;
 
-1. Order por sexo e k_symbol
+##### **&nbsp;&nbsp;&nbsp;4.3 Análise de Pagamentos**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesse gráfico de boxplot é feito uma análise de empréstimos por tipo de empréstimo e sexo.
+
+* Order por sexo e k_symbol
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
@@ -318,11 +511,14 @@ plot_ly(cli_ord, x = ~k_symbol, y = ~amount, color = ~sex, colors = c("#ff96e4",
 
 ```
 
-##### 3.5 Análise de Transações
 
-Lorem Ipsum...
+&nbsp;
 
-1. Transaction por sexo e k_symbol
+##### **&nbsp;&nbsp;&nbsp;4.4 Análise de Transações**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No primeiro gráfico fazemos uma análise pela caracterização das operações e relacionamos pelo boxplot com o sexo.
+
+* Transaction por sexo e k_symbol
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
@@ -331,7 +527,9 @@ plot_ly(cli_trans, x = ~k_symbol, y = ~amount, color = ~sex, colors = c("#ff96e4
 
 ```
 
-2. Transaction por sexo e operation
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesse segundo gráfico fazemos uma análise pelo tipo das operações e relacionamos pelo boxplot com o sexo.
+
+* Transaction por sexo e operation
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
@@ -340,7 +538,9 @@ plot_ly(cli_trans, x = ~operation, y = ~amount, color = ~sex, colors = c("#ff96e
 
 ```
 
-3. Transaction por sexo e type
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nesse terceiro gráfico fazemos uma análise pelo tipo da transação e relacionamos pelo boxplot com o sexo.
+
+* Transaction por sexo e type
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
@@ -350,11 +550,15 @@ plot_ly(cli_trans, x = ~type.x, y = ~amount, color = ~sex, colors = c("#ff96e4",
 ```
 
 
-##### 3.6 Análise de Cartões
+&nbsp;
 
-Lorem Ipsum...
+##### **&nbsp;&nbsp;&nbsp;4.5 Análise de Cartões**
 
-1. Cards por sexo e type
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Usamos esse gráfico para fazer uma análise do tipo de cartão (gold,classic e junior) e relacionamos pelo boxplot com o sexo dos clientes.
+
+
+* Cards por sexo e type
 
 ```{r fig.width=8, fig.height=4, warning = FALSE}
 
@@ -363,4 +567,16 @@ plot_ly(cli_card, x = ~type.x, y= ~card_id, color = ~sex, colors = c("#ff96e4", 
 
 ```
 
-#### **4. Referências**
+
+&nbsp;
+
+#### **5. Referências**
+
+* R Core Team (2017). R: A language and environment for statistical computing. R Foundation for
+Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+* RStudio: https://www.rstudio.com
+* R for DataScience - Hadley wickham, Garrett Grolemund: http://r4ds.had.co.nz
+* Tidyverse, R packages for data science: https://www.tidyverse.org
+* CRAN, The Comprehensive R Archive Network: https://cran.r-project.org
+* ggmap, a package for plotting maps in R with ggplot2: https://github.com/dkahle/ggmap
+* Oracle Data Modeler - https://www.oracle.com/database/technologies/appdev/datamodeler.html
